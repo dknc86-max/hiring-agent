@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hiring Agent - Resume Evaluator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>📄 Hiring Agent</h1>
+        <p class="subtitle">AI-powered resume evaluation and scoring</p>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data" class="upload-form">
+            <div class="file-input-wrapper">
+                <input type="file" name="resume" id="resume" accept=".pdf" required>
+                <label for="resume" class="file-label">
+                    <span class="file-label-text">Choose a PDF resume</span>
+                </label>
+            </div>
+            <button type="submit" class="submit-btn">Evaluate Resume</button>
+        </form>
+        
+        <div class="features">
+            <h2>How it works</h2>
+            <ul>
+                <li>Extracts structured data from your resume PDF</li>
+                <li>Enriches with GitHub profile signals</li>
+                <li>Produces fair, explainable evaluation scores</li>
+            </ul>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

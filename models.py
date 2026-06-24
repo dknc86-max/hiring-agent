@@ -8,6 +8,7 @@ class ModelProvider(Enum):
 
     OLLAMA = "ollama"
     GEMINI = "gemini"
+    OPENAI = "openai"
 
 
 @runtime_checkable
@@ -389,3 +390,107 @@ class GeminiProvider:
                     f"Retrying in {sleep_time}s..."
                 )
                 time.sleep(sleep_time)
+
+
+class OpenAIProvider:
+    """OpenAI-compatible LLM provider implementation."""
+
+    def __init__(self, api_key: str, base_url: str = None):
+        import openai
+
+        self.client = openai.OpenAI(api_key=api_key, base_url=base_url)
+
+    def chat(
+        self,
+        model: str,
+        messages: List[Dict[str, str]],
+        options: Dict[str, Any] = None,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """Send a chat request to OpenAI-compatible API."""
+        import time
+        import random
+        from openai import RateLimitError
+
+        MAX_RETRIES = 5
+        BASE_DELAY = 2.0
+        MAX_DELAY = 60.0
+
+        params = {"model": model, "messages": messages}
+        if options:
+            if "temperature" in options:
+                params["temperature"] = options["temperature"]
+            if "top_p" in options:
+                params["top_p"] = options["top_p"]
+
+        for attempt in range(MAX_RETRIES):
+            try:
+                response = self.client.chat.completions.create(**params)
+                return {
+                    "message": {
+                        "role": "assistant",
+                        "content": response.choices[0].message.content,
+                    }
+                }
+            except RateLimitError as e:
+                if attempt == MAX_RETRIES - 1:
+                    raise
+                delay = min(BASE_DELAY * (2**attempt), MAX_DELAY)
+                sleep_time = round(delay * random.uniform(0.8, 1.2), 2)
+                print(
+                    f"[OpenAIProvider] Rate limit hit "
+                    f"(attempt {attempt + 1}/{MAX_RETRIES}). "
+                    f"Retrying in {sleep_time}s..."
+                )
+                time.sleep(sleep_time)
+
+
+class MockProvider:
+    """Mock LLM provider for testing without an API key."""
+
+    def chat(
+        self,
+        model: str,
+        messages: List[Dict[str, str]],
+        options: Dict[str, Any] = None,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """Return mock JSON responses for testing."""
+        import json
+        
+        content = ""
+        msg_str = str(messages).lower()
+        if "basics" in msg_str or "basic" in msg_str:
+            content = json.dumps({
+                "basics": {
+                    "name": "John Doe",
+                    "email": "john.doe@example.com",
+                    "phone": "+1234567890",
+                    "summary": "Software engineer with 5 years experience"
+                }
+            })
+        elif "work" in msg_str or "experience" in msg_str:
+            content = json.dumps({"work": [{"company": "Tech Corp", "position": "Senior Engineer", "startDate": "2020", "endDate": "2024"}]})
+        elif "skills" in msg_str:
+            content = json.dumps({"skills": [{"name": "Python", "level": "Expert"}, {"name": "JavaScript", "level": "Intermediate"}]})
+        elif "projects" in msg_str:
+            content = json.dumps({"projects": [{"name": "Web App", "description": "Full-stack application"}]})
+        elif "education" in msg_str:
+            content = json.dumps({"education": [{"institution": "University", "degree": "B.S. Computer Science"}]})
+        elif "evaluation" in msg_str or "score" in msg_str:
+            content = json.dumps({
+                "scores": {
+                    "open_source": {"score": 20, "max": 35, "evidence": "Several open source contributions found"},
+                    "self_projects": {"score": 15, "max": 30, "evidence": "Personal projects demonstrate initiative"},
+                    "production": {"score": 20, "max": 25, "evidence": "Production experience noted"},
+                    "technical_skills": {"score": 8, "max": 10, "evidence": "Strong technical skills demonstrated"}
+                },
+                "bonus_points": {"total": 5, "breakdown": "Bonus for diverse skill set"},
+                "deductions": {"total": 0, "reasons": ""},
+                "key_strengths": ["Strong problem-solving skills", "Experience with modern technologies"],
+                "areas_for_improvement": ["More leadership experience would be beneficial"]
+            })
+        else:
+            content = "{}"
+        
+        return {"message": {"role": "assistant", "content": content}}

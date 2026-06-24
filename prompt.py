@@ -41,6 +41,16 @@ MODEL_PARAMETERS = {
     "gemini-2.5-flash-lite": {"temperature": 0.1, "top_p": 0.9},
     "gemini-3.5-flash": {"temperature": 0.1, "top_p": 0.9},
     "gemini-3.1-flash-lite": {"temperature": 0.1, "top_p": 0.9},
+    # OpenAI/compatible models
+    "gpt-4": {"temperature": 0.1, "top_p": 0.9},
+    "gpt-4-turbo": {"temperature": 0.1, "top_p": 0.9},
+    "gpt-3.5-turbo": {"temperature": 0.1, "top_p": 0.9},
+    "deepseek-chat": {"temperature": 0.1, "top_p": 0.9},
+    "deepseek-coder": {"temperature": 0.1, "top_p": 0.9},
+    "meta-llama/llama-3.1-8b-instruct:free": {"temperature": 0.1, "top_p": 0.9},
+    "llama-3.1-8b-instant": {"temperature": 0.1, "top_p": 0.9},
+    "mixtral-8x7b-32768": {"temperature": 0.1, "top_p": 0.9},
+    "gemma2-9b-it": {"temperature": 0.1, "top_p": 0.9},
 }
 
 # Model provider mapping
@@ -61,7 +71,20 @@ MODEL_PROVIDER_MAPPING = {
     "gemini-2.5-pro": ModelProvider.GEMINI,
     "gemini-3.5-flash": ModelProvider.GEMINI,
     "gemini-3.1-flash-lite": ModelProvider.GEMINI,
+    # OpenAI/compatible models
+    "gpt-4": ModelProvider.OPENAI,
+    "gpt-4-turbo": ModelProvider.OPENAI,
+    "gpt-3.5-turbo": ModelProvider.OPENAI,
+    "deepseek-chat": ModelProvider.OPENAI,
+    "deepseek-coder": ModelProvider.OPENAI,
+    "meta-llama/llama-3.1-8b-instruct:free": ModelProvider.OPENAI,
+    "llama-3.1-8b-instant": ModelProvider.OPENAI,
+    "mixtral-8x7b-32768": ModelProvider.OPENAI,
+    "gemma2-9b-it": ModelProvider.OPENAI,
 }
 
 # Get API keys from environment
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")

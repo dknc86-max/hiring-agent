@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluation Results - Hiring Agent</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Evaluation Results</h1>
+        
+        {% if result %}
+            <div class="candidate-name">{{ result.get('name', candidate_name) if result else candidate_name }}</div>
+            
+            <div class="scores-section">
+                <h2>Category Scores</h2>
+                <div class="score-grid">
+                    {% if result.scores %}
+                        {% if result.scores.open_source %}
+                            <div class="score-card">
+                                <div class="score-title">Open Source</div>
+                                <div class="score-value">{{ result.scores.open_source.score|round }}/35</div>
+                                <div class="score-evidence">{{ result.scores.open_source.evidence }}</div>
+                            </div>
+                        {% endif %}
+                        {% if result.scores.self_projects %}
+                            <div class="score-card">
+                                <div class="score-title">Self Projects</div>
+                                <div class="score-value">{{ result.scores.self_projects.score|round }}/30</div>
+                                <div class="score-evidence">{{ result.scores.self_projects.evidence }}</div>
+                            </div>
+                        {% endif %}
+                        {% if result.scores.production %}
+                            <div class="score-card">
+                                <div class="score-title">Production</div>
+                                <div class="score-value">{{ result.scores.production.score|round }}/25</div>
+                                <div class="score-evidence">{{ result.scores.production.evidence }}</div>
+                            </div>
+                        {% endif %}
+                        {% if result.scores.technical_skills %}
+                            <div class="score-card">
+                                <div class="score-title">Technical Skills</div>
+                                <div class="score-value">{{ result.scores.technical_skills.score|round }}/10</div>
+                                <div class="score-evidence">{{ result.scores.technical_skills.evidence }}</div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                
+                {% if result.bonus_points %}
+                    <div class="bonus-section">
+                        <h3>Bonus Points: +{{ result.bonus_points.total }}</h3>
+                        <p>{{ result.bonus_points.breakdown }}</p>
+                    </div>
+                {% endif %}
+                
+                {% if result.deductions and result.deductions.total > 0 %}
+                    <div class="deduction-section">
+                        <h3>Deductions: -{{ result.deductions.total }}</h3>
+                        <p>{{ result.deductions.reasons }}</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            {% if result.key_strengths %}
+                <div class="strengths-section">
+                    <h2>✅ Key Strengths</h2>
+                    <ul>
+                        {% for strength in result.key_strengths %}
+                            <li>{{ strength }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            
+            {% if result.areas_for_improvement %}
+                <div class="improvement-section">
+                    <h2>🔧 Areas for Improvement</h2>
+                    <ul>
+                        {% for area in result.areas_for_improvement %}
+                            <li>{{ area }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            
+            <a href="{{ url_for('index') }}" class="back-btn">Evaluate Another Resume</a>
+        {% else %}
+            <p>No evaluation results available.</p>
+            <a href="{{ url_for('index') }}" class="back-btn">Go Back</a>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -4,8 +4,9 @@ Utility functions for LLM providers.
 
 import logging
 from typing import Any, Dict, Optional
-from models import ModelProvider, OllamaProvider, GeminiProvider
-from prompt import MODEL_PROVIDER_MAPPING, GEMINI_API_KEY
+from models import ModelProvider, OllamaProvider, GeminiProvider, OpenAIProvider, MockProvider
+from prompt import MODEL_PROVIDER_MAPPING, GEMINI_API_KEY, OPENAI_API_KEY, OPENAI_BASE_URL, GROQ_API_KEY
+from config import MOCK_MODE, DEVELOPMENT_MODE
 
 logger = logging.getLogger(__name__)
 
@@ -45,18 +46,35 @@ def initialize_llm_provider(model_name: str) -> Any:
         model_name: The name of the model to use
 
     Returns:
-        An initialized LLM provider (either OllamaProvider or GeminiProvider)
+        An initialized LLM provider (OllamaProvider, GeminiProvider, OpenAIProvider, or MockProvider)
     """
-    # Default to Ollama provider
-    provider = OllamaProvider()
-    # If using Gemini and API key is available, use Gemini provider
+    if MOCK_MODE:
+        logger.info("🔄 Using Mock provider (no LLM API calls)")
+        return MockProvider()
+
     model_provider = MODEL_PROVIDER_MAPPING.get(model_name, ModelProvider.OLLAMA)
+
     if model_provider == ModelProvider.GEMINI:
         if not GEMINI_API_KEY:
             logger.warning("⚠️ Gemini API key not found. Falling back to Ollama.")
+            provider = OllamaProvider()
         else:
             logger.info(f"🔄 Using Google Gemini API provider with model {model_name}")
             provider = GeminiProvider(api_key=GEMINI_API_KEY)
+    elif model_provider == ModelProvider.OPENAI:
+        api_key = GROQ_API_KEY if "groq" in OPENAI_BASE_URL else OPENAI_API_KEY
+        if not api_key:
+            logger.warning("⚠️ OpenAI/Groq API key not found. Falling back to Ollama.")
+            provider = OllamaProvider()
+        else:
+            provider_name = "Groq" if "groq" in OPENAI_BASE_URL else "OpenAI"
+            logger.info(f"🔄 Using {provider_name} provider with model {model_name}")
+            provider = OpenAIProvider(
+                api_key=api_key,
+                base_url=OPENAI_BASE_URL if OPENAI_BASE_URL else None,
+            )
     else:
         logger.info(f"🔄 Using Ollama provider with model {model_name}")
+        provider = OllamaProvider()
+
     return provider
