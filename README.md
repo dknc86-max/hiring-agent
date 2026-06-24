@@ -199,6 +199,27 @@ You can leave it on during iteration. See the next section for details.
 
 ---
 
+## Web Interface
+
+The project includes a Flask web interface for browser-based resume evaluation.
+
+### Setup
+
+```bash
+$ pip install flask python-multipart
+```
+
+### Run
+
+```bash
+$ python run_server.py
+# Open http://localhost:5002 in your browser
+```
+
+Upload a PDF resume to get structured evaluation scores.
+
+---
+
 ## CLI usage
 
 ### End to end scoring
@@ -265,6 +286,13 @@ What happens:
 - Set `DEFAULT_MODEL` to a supported Gemini model, for example `gemini-2.0-flash`
 - Provide `GEMINI_API_KEY`
 - The wrapper in `models.GeminiProvider` adapts responses to a unified format
+
+### OpenAI/Groq (Free Tier)
+
+- Set `LLM_PROVIDER=openai`
+- Set `DEFAULT_MODEL` to a Groq model (free): `llama-3.1-8b-instant`, `mixtral-8x7b-32768`
+- Get a free API key from [Groq](https://console.groq.com/keys)
+- Set `OPENAI_BASE_URL=https://api.groq.com/openai/v1` and `GROQ_API_KEY=your_key`
 
 ---
 
