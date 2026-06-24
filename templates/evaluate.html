@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluate Resume - Hiring Agent</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Evaluating Resume</h1>
+        <p class="filename">Processing: <strong>{{ filename }}</strong></p>
+        
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="progress-text" id="progressText">Starting...</div>
+        </div>
+        
+        <div id="resultSection" style="display: none;">
+            <h2>Evaluation Complete!</h2>
+            <a href="/" class="back-btn">Evaluate Another</a>
+        </div>
+        
+        <div id="errorSection" style="display: none;" class="flash flash-error">
+            <p id="errorMessage"></p>
+        </div>
+    </div>
+
+    <script>
+        const evalId = "{{ eval_id }}";
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const resultSection = document.getElementById('resultSection');
+        const errorSection = document.getElementById('errorSection');
+        const errorMessage = document.getElementById('errorMessage');
+
+        function updateProgress() {
+            fetch(`/progress/${evalId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'starting' || data.status === 'running') {
+                        progressFill.style.width = (data.progress || 0) + '%';
+                        progressText.textContent = data.message || 'Processing...';
+                        setTimeout(updateProgress, 500);
+                    } else if (data.status === 'complete') {
+                        progressFill.style.width = '100%';
+                        progressText.textContent = 'Evaluation complete!';
+                        setTimeout(() => {
+                            resultSection.style.display = 'block';
+                        }, 500);
+                    } else if (data.status === 'error') {
+                        progressText.textContent = 'Error occurred';
+                        errorMessage.textContent = data.error || 'Unknown error';
+                        errorSection.style.display = 'block';
+                    }
+                })
+                .catch(err => {
+                    console.error('Error checking progress:', err);
+                    setTimeout(updateProgress, 1000);
+                });
+        }
+
+        updateProgress();
+    </script>
+</body>
+</html>
