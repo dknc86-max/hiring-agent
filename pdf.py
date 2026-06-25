@@ -31,6 +31,7 @@ from prompt import (
 )
 from prompts.template_manager import TemplateManager
 from transform import transform_parsed_data
+from config import DEVELOPMENT_MODE, FAST_MODE, EXTRACT_SECTIONS
 
 logger = logging.getLogger(__name__)
 
@@ -268,7 +269,10 @@ class PDFHandler:
     ) -> Optional[JSONResume]:
         start_time = time.time()
 
-        sections = ["basics", "work", "education", "skills", "projects", "awards"]
+        if FAST_MODE:
+            sections = ["basics"]
+        else:
+            sections = EXTRACT_SECTIONS
 
         complete_resume = {
             "basics": None,
