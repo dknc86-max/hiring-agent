@@ -20,7 +20,8 @@
         
         <div id="resultSection" style="display: none;">
             <h2>Evaluation Complete!</h2>
-            <a href="/" class="back-btn">Evaluate Another</a>
+            <a id="viewResultBtn" href="#" class="back-btn">View Results</a>
+            <a href="/" class="back-btn" style="background-color: #6c757d; margin-left: 10px;">Evaluate Another</a>
         </div>
         
         <div id="errorSection" style="display: none;" class="flash flash-error">
@@ -46,10 +47,12 @@
                         setTimeout(updateProgress, 500);
                     } else if (data.status === 'complete') {
                         progressFill.style.width = '100%';
-                        progressText.textContent = 'Evaluation complete!';
+                        progressText.textContent = 'Evaluation complete! Redirecting to results...';
+                        document.getElementById('viewResultBtn').href = `/result/${evalId}`;
                         setTimeout(() => {
                             resultSection.style.display = 'block';
-                        }, 500);
+                            window.location.href = `/result/${evalId}`;
+                        }, 800);
                     } else if (data.status === 'error') {
                         progressText.textContent = 'Error occurred';
                         errorMessage.textContent = data.error || 'Unknown error';

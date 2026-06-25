@@ -297,10 +297,21 @@ class PDFHandler:
             "meta": None,
         }
 
-        for section_name in sections:
-            section_data = self._extract_section_data(text_content, section_name)
+        import concurrent.futures
 
-            if section_data:
+        def extract_section(section_name):
+            try:
+                data = self._extract_section_data(text_content, section_name)
+                return section_name, data
+            except Exception as e:
+                logger.error(f"Error in thread extracting {section_name}: {e}")
+                return section_name, None
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=len(sections)) as executor:
+            results = list(executor.map(extract_section, sections))
+
+        for section_name, section_data in results:
+            if section_data is not None:
                 complete_resume.update(section_data)
                 logger.debug(f"✅ Successfully extracted {section_name} section")
             else:

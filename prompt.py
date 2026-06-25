@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from models import ModelProvider
 
 # Load environment variables
-load_dotenv()
+load_dotenv(override=True)
 
 # Constants
 DEFAULT_MODEL_NAME = "gemma3:4b"
@@ -51,6 +51,7 @@ MODEL_PARAMETERS = {
     "llama-3.1-8b-instant": {"temperature": 0.1, "top_p": 0.9},
     "mixtral-8x7b-32768": {"temperature": 0.1, "top_p": 0.9},
     "gemma2-9b-it": {"temperature": 0.1, "top_p": 0.9},
+    "llama-3.3-70b-versatile": {"temperature": 0.1, "top_p": 0.9},
 }
 
 # Model provider mapping
@@ -81,6 +82,7 @@ MODEL_PROVIDER_MAPPING = {
     "llama-3.1-8b-instant": ModelProvider.OPENAI,
     "mixtral-8x7b-32768": ModelProvider.OPENAI,
     "gemma2-9b-it": ModelProvider.OPENAI,
+    "llama-3.3-70b-versatile": ModelProvider.OPENAI,
 }
 
 # Get API keys from environment

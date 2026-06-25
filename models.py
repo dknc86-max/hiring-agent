@@ -468,7 +468,20 @@ class MockProvider:
         
         content = ""
         msg_str = str(messages).lower()
-        if "basics" in msg_str or "basic" in msg_str:
+        if "evaluation" in msg_str or "score" in msg_str:
+            content = json.dumps({
+                "scores": {
+                    "open_source": {"score": 20, "max": 35, "evidence": "Several open source contributions found"},
+                    "self_projects": {"score": 15, "max": 30, "evidence": "Personal projects demonstrate initiative"},
+                    "production": {"score": 20, "max": 25, "evidence": "Production experience noted"},
+                    "technical_skills": {"score": 8, "max": 10, "evidence": "Strong technical skills demonstrated"}
+                },
+                "bonus_points": {"total": 5, "breakdown": "Bonus for diverse skill set"},
+                "deductions": {"total": 0, "reasons": ""},
+                "key_strengths": ["Strong problem-solving skills", "Experience with modern technologies"],
+                "areas_for_improvement": ["More leadership experience would be beneficial"]
+            })
+        elif "basics" in msg_str or "basic" in msg_str:
             content = json.dumps({
                 "basics": {
                     "name": "John Doe",
@@ -485,19 +498,6 @@ class MockProvider:
             content = json.dumps({"projects": [{"name": "Web App", "description": "Full-stack application"}]})
         elif "education" in msg_str:
             content = json.dumps({"education": [{"institution": "University", "degree": "B.S. Computer Science"}]})
-        elif "evaluation" in msg_str or "score" in msg_str:
-            content = json.dumps({
-                "scores": {
-                    "open_source": {"score": 20, "max": 35, "evidence": "Several open source contributions found"},
-                    "self_projects": {"score": 15, "max": 30, "evidence": "Personal projects demonstrate initiative"},
-                    "production": {"score": 20, "max": 25, "evidence": "Production experience noted"},
-                    "technical_skills": {"score": 8, "max": 10, "evidence": "Strong technical skills demonstrated"}
-                },
-                "bonus_points": {"total": 5, "breakdown": "Bonus for diverse skill set"},
-                "deductions": {"total": 0, "reasons": ""},
-                "key_strengths": ["Strong problem-solving skills", "Experience with modern technologies"],
-                "areas_for_improvement": ["More leadership experience would be beneficial"]
-            })
         else:
             content = "{}"
         

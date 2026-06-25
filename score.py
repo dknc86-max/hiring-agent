@@ -252,7 +252,7 @@ def main(pdf_path):
         resume_data = pdf_handler.extract_json_from_pdf(pdf_path)
 
         if resume_data == None:
-            return None
+            return None, None
 
         if DEVELOPMENT_MODE:
             if is_valid_resume_data(resume_data):
@@ -361,7 +361,7 @@ def main(pdf_path):
             # Write the row
             writer.writerow(csv_row)
 
-    return score
+    return score, resume_data
 
 
 if __name__ == "__main__":

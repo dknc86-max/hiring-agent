@@ -8,88 +8,263 @@
 </head>
 <body>
     <div class="container">
-        <h1>📊 Evaluation Results</h1>
-        
+        <h1>📊 Evaluation Scorecard</h1>
+        <p class="subtitle">Detailed evaluation metrics and technical capabilities overview</p>
+
         {% if result %}
-            <div class="candidate-name">{{ result.get('name', candidate_name) if result else candidate_name }}</div>
-            
-            <div class="scores-section">
-                <h2>Category Scores</h2>
-                <div class="score-grid">
+            <!-- Candidate Header Section -->
+            <div class="candidate-header">
+                <div class="candidate-name">{{ candidate_name }}</div>
+                <div class="candidate-badges">
+                    {% if email %}
+                        <span class="badge">
+                            <span>📧</span> {{ email }}
+                        </span>
+                    {% endif %}
+                    {% if phone %}
+                        <span class="badge">
+                            <span>📞</span> {{ phone }}
+                        </span>
+                    {% endif %}
+                    {% if github_url %}
+                        <a href="{{ github_url }}" target="_blank" class="badge badge-github">
+                            <span>🐙</span> GitHub Profile
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Core Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Left Overall Score Gauge -->
+                <div class="score-gauge-card">
+                    <div class="overall-score-gauge">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                            <defs>
+                                <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="var(--color-primary)" />
+                                    <stop offset="100%" stop-color="var(--color-secondary)" />
+                                </linearGradient>
+                            </defs>
+                            <circle class="gauge-bg" cx="50" cy="50" r="42" />
+                            <circle class="gauge-fill" cx="50" cy="50" r="42" 
+                                    data-score="{{ total_score }}" 
+                                    data-max="120" />
+                        </svg>
+                        <div class="gauge-text">
+                            <span class="gauge-num">{{ total_score|round(1) }}</span>
+                            <span class="gauge-max">/ 120</span>
+                        </div>
+                    </div>
+                    
+                    {% if total_score >= 100 %}
+                        <span class="rating-badge rating-badge-outstanding">Outstanding</span>
+                    {% elif total_score >= 80 %}
+                        <span class="rating-badge rating-badge-strong">Strong Match</span>
+                    {% elif total_score >= 60 %}
+                        <span class="rating-badge rating-badge-moderate">Moderate Match</span>
+                    {% else %}
+                        <span class="rating-badge rating-badge-needs-work">Needs Work</span>
+                    {% endif %}
+                </div>
+
+                <!-- Right Category Detailed Scores -->
+                <div class="scores-section">
                     {% if result.scores %}
+                        <!-- Open Source Category -->
                         {% if result.scores.open_source %}
-                            <div class="score-card">
-                                <div class="score-title">Open Source</div>
-                                <div class="score-value">{{ result.scores.open_source.score|round }}/35</div>
-                                <div class="score-evidence">{{ result.scores.open_source.evidence }}</div>
+                            <div class="score-card-row">
+                                <div class="score-card-header">
+                                    <span class="score-card-title">
+                                        <span>🌐</span> Open Source Contribution
+                                    </span>
+                                    <span class="score-card-value">
+                                        {{ result.scores.open_source.score|round(1) }}<span>/35</span>
+                                    </span>
+                                </div>
+                                <div class="mini-progress-bar">
+                                    <div class="mini-progress-fill fill-open-source" 
+                                         data-score="{{ result.scores.open_source.score }}" 
+                                         data-max="35"></div>
+                                </div>
+                                {% if result.scores.open_source.evidence %}
+                                    <div class="score-card-evidence">{{ result.scores.open_source.evidence }}</div>
+                                {% endif %}
                             </div>
                         {% endif %}
+
+                        <!-- Self Projects Category -->
                         {% if result.scores.self_projects %}
-                            <div class="score-card">
-                                <div class="score-title">Self Projects</div>
-                                <div class="score-value">{{ result.scores.self_projects.score|round }}/30</div>
-                                <div class="score-evidence">{{ result.scores.self_projects.evidence }}</div>
+                            <div class="score-card-row">
+                                <div class="score-card-header">
+                                    <span class="score-card-title">
+                                        <span>🚀</span> Personal Projects
+                                    </span>
+                                    <span class="score-card-value">
+                                        {{ result.scores.self_projects.score|round(1) }}<span>/30</span>
+                                    </span>
+                                </div>
+                                <div class="mini-progress-bar">
+                                    <div class="mini-progress-fill fill-self-projects" 
+                                         data-score="{{ result.scores.self_projects.score }}" 
+                                         data-max="30"></div>
+                                </div>
+                                {% if result.scores.self_projects.evidence %}
+                                    <div class="score-card-evidence">{{ result.scores.self_projects.evidence }}</div>
+                                {% endif %}
                             </div>
                         {% endif %}
+
+                        <!-- Production Experience Category -->
                         {% if result.scores.production %}
-                            <div class="score-card">
-                                <div class="score-title">Production</div>
-                                <div class="score-value">{{ result.scores.production.score|round }}/25</div>
-                                <div class="score-evidence">{{ result.scores.production.evidence }}</div>
+                            <div class="score-card-row">
+                                <div class="score-card-header">
+                                    <span class="score-card-title">
+                                        <span>🏢</span> Production Experience
+                                    </span>
+                                    <span class="score-card-value">
+                                        {{ result.scores.production.score|round(1) }}<span>/25</span>
+                                    </span>
+                                </div>
+                                <div class="mini-progress-bar">
+                                    <div class="mini-progress-fill fill-production" 
+                                         data-score="{{ result.scores.production.score }}" 
+                                         data-max="25"></div>
+                                </div>
+                                {% if result.scores.production.evidence %}
+                                    <div class="score-card-evidence">{{ result.scores.production.evidence }}</div>
+                                {% endif %}
                             </div>
                         {% endif %}
+
+                        <!-- Technical Skills Category -->
                         {% if result.scores.technical_skills %}
-                            <div class="score-card">
-                                <div class="score-title">Technical Skills</div>
-                                <div class="score-value">{{ result.scores.technical_skills.score|round }}/10</div>
-                                <div class="score-evidence">{{ result.scores.technical_skills.evidence }}</div>
+                            <div class="score-card-row">
+                                <div class="score-card-header">
+                                    <span class="score-card-title">
+                                        <span>💻</span> Technical Skills
+                                    </span>
+                                    <span class="score-card-value">
+                                        {{ result.scores.technical_skills.score|round(1) }}<span>/10</span>
+                                    </span>
+                                </div>
+                                <div class="mini-progress-bar">
+                                    <div class="mini-progress-fill fill-technical-skills" 
+                                         data-score="{{ result.scores.technical_skills.score }}" 
+                                         data-max="10"></div>
+                                </div>
+                                {% if result.scores.technical_skills.evidence %}
+                                    <div class="score-card-evidence">{{ result.scores.technical_skills.evidence }}</div>
+                                {% endif %}
                             </div>
                         {% endif %}
                     {% endif %}
                 </div>
-                
-                {% if result.bonus_points %}
-                    <div class="bonus-section">
-                        <h3>Bonus Points: +{{ result.bonus_points.total }}</h3>
-                        <p>{{ result.bonus_points.breakdown }}</p>
-                    </div>
-                {% endif %}
-                
-                {% if result.deductions and result.deductions.total > 0 %}
-                    <div class="deduction-section">
-                        <h3>Deductions: -{{ result.deductions.total }}</h3>
-                        <p>{{ result.deductions.reasons }}</p>
-                    </div>
-                {% endif %}
             </div>
-            
-            {% if result.key_strengths %}
-                <div class="strengths-section">
+
+            <!-- Adjustments Section (Bonus & Deductions) -->
+            <div class="adjustments-grid">
+                <!-- Bonus Points Card -->
+                <div class="adjustment-card adjustment-bonus">
+                    <div class="adjustment-header">
+                        <span class="adjustment-title adjustment-title-bonus">⭐ Bonus Points</span>
+                        <span class="adjustment-score">+{{ result.bonus_points.total if result.bonus_points else 0 }}</span>
+                    </div>
+                    <div class="adjustment-desc">
+                        {{ result.bonus_points.breakdown if result.bonus_points else "No bonus points awarded." }}
+                    </div>
+                </div>
+
+                <!-- Deductions Card -->
+                <div class="adjustment-card adjustment-deduction">
+                    <div class="adjustment-header">
+                        <span class="adjustment-title adjustment-title-deduction">⚠️ Deductions</span>
+                        <span class="adjustment-score">-{{ result.deductions.total if result.deductions else 0 }}</span>
+                    </div>
+                    <div class="adjustment-desc">
+                        {{ result.deductions.reasons if (result.deductions and result.deductions.total > 0) else "No deductions applied." }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Qualitative Section (Strengths & Growth Areas) -->
+            <div class="qualitative-grid">
+                <!-- Key Strengths -->
+                <div class="qualitative-card">
                     <h2>✅ Key Strengths</h2>
-                    <ul>
-                        {% for strength in result.key_strengths %}
-                            <li>{{ strength }}</li>
-                        {% endfor %}
+                    <ul class="qualitative-list">
+                        {% if result.key_strengths %}
+                            {% for strength in result.key_strengths %}
+                                <li class="qualitative-item strength-item">{{ strength }}</li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="qualitative-item">No specific strengths highlighted.</li>
+                        {% endif %}
                     </ul>
                 </div>
-            {% endif %}
-            
-            {% if result.areas_for_improvement %}
-                <div class="improvement-section">
+
+                <!-- Areas for Improvement -->
+                <div class="qualitative-card">
                     <h2>🔧 Areas for Improvement</h2>
-                    <ul>
-                        {% for area in result.areas_for_improvement %}
-                            <li>{{ area }}</li>
-                        {% endfor %}
+                    <ul class="qualitative-list">
+                        {% if result.areas_for_improvement %}
+                            {% for area in result.areas_for_improvement %}
+                                <li class="qualitative-item improvement-item">{{ area }}</li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="qualitative-item">No major areas for improvement noted.</li>
+                        {% endif %}
                     </ul>
                 </div>
-            {% endif %}
-            
-            <a href="{{ url_for('index') }}" class="back-btn">Evaluate Another Resume</a>
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="actions-footer">
+                <a href="{{ url_for('index') }}" class="back-btn back-btn-primary">Evaluate Another Resume</a>
+            </div>
         {% else %}
             <p>No evaluation results available.</p>
-            <a href="{{ url_for('index') }}" class="back-btn">Go Back</a>
+            <div class="actions-footer">
+                <a href="{{ url_for('index') }}" class="back-btn back-btn-primary">Go Back</a>
+            </div>
         {% endif %}
     </div>
+
+    <!-- Micro-animations Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Animate SVG Gauge Circle
+            const gaugeFill = document.querySelector('.gauge-fill');
+            if (gaugeFill) {
+                const score = parseFloat(gaugeFill.dataset.score) || 0;
+                const maxScore = parseFloat(gaugeFill.dataset.max) || 120;
+                const radius = parseFloat(gaugeFill.getAttribute('r'));
+                const circumference = 2 * Math.PI * radius;
+                
+                // Set initial status to hidden/empty
+                gaugeFill.style.strokeDasharray = `${circumference} ${circumference}`;
+                gaugeFill.style.strokeDashoffset = circumference;
+                
+                // Animate to target score with delay
+                setTimeout(() => {
+                    const offset = circumference - (score / maxScore) * circumference;
+                    gaugeFill.style.strokeDashoffset = offset;
+                }, 200);
+            }
+
+            // Animate Category Progress Bars
+            const progressFills = document.querySelectorAll('.mini-progress-fill');
+            progressFills.forEach(fill => {
+                const score = parseFloat(fill.dataset.score) || 0;
+                const max = parseFloat(fill.dataset.max) || 100;
+                const percentage = (score / max) * 100;
+                
+                // Animate width
+                setTimeout(() => {
+                    fill.style.width = `${percentage}%`;
+                }, 300);
+            });
+        });
+    </script>
 </body>
 </html>
