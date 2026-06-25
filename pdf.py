@@ -56,6 +56,13 @@ class PDFHandler:
                     doc,
                     pages=pages,
                 )
+                # Truncate text to avoid token limit issues (~5000 chars safe for Groq)
+                max_chars = 15000
+                if resume_text and len(resume_text) > max_chars:
+                    logger.warning(
+                        f"PDF text truncated from {len(resume_text)} to {max_chars} characters"
+                    )
+                    resume_text = resume_text[:max_chars]
                 logger.debug(
                     f"Extracted text from PDF: {len(resume_text) if resume_text else 0} characters"
                 )

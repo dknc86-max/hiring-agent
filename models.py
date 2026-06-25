@@ -443,6 +443,14 @@ class OpenAIProvider:
                     f"Retrying in {sleep_time}s..."
                 )
                 time.sleep(sleep_time)
+            except Exception as e:
+                error_str = str(e)
+                if "413" in error_str or "tokens per minute" in error_str.lower():
+                    print(
+                        f"[OpenAIProvider] Token limit exceeded. "
+                        f"Please reduce PDF size or upgrade to Dev Tier."
+                    )
+                raise
 
 
 class MockProvider:
