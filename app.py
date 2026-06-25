@@ -4,6 +4,7 @@ import tempfile
 import uuid
 import threading
 from score import main
+from config import MOCK_MODE
 from dotenv import load_dotenv
 
 app = Flask(__name__)
